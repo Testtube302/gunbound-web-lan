@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gunbound LAN (Web) — MVP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Gunbound LAN (Web)</h1>
+    <div class="sub">Mobile browser clients on the same Wi‑Fi • LAN‑only</div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Join lobby</h2>
+      <div class="row">
+        <label>Name</label>
+        <input id="name" value="Player" maxlength="32" />
+      </div>
+      <div class="row buttons">
+        <button id="btnConnect">Connect</button>
+        <button id="btnJoin" class="primary" disabled>Join</button>
+        <button id="btnLeave" class="secondary" disabled>Leave</button>
+      </div>
+      <div id="status" class="status">Status: not connected</div>
+    </section>
+
+    <section class="card">
+      <h2>Players (max 2)</h2>
+      <div class="row buttons">
+        <button id="btnReady" class="primary" disabled>Ready</button>
+        <button id="btnUnready" class="secondary" disabled>Unready</button>
+      </div>
+      <ul id="players" class="players"></ul>
+      <div class="hint">When both players are Ready, the match starts. Then the active player can aim + fire.</div>
+    </section>
+
+    <section class="card">
+      <h2>Match</h2>
+      <div class="row">
+        <canvas id="game" width="1000" height="600"></canvas>
+      </div>
+      <div class="row">
+        <div id="matchInfo" class="status">Match: —</div>
+      </div>
+      <div class="row">
+        <label>Angle (<span id="angleVal">45</span>°)</label>
+        <input id="angle" type="range" min="5" max="85" value="45" />
+      </div>
+      <div class="row">
+        <label>Power (<span id="powerVal">0.65</span>)</label>
+        <input id="power" type="range" min="0.1" max="1" step="0.01" value="0.65" />
+      </div>
+      <div class="row buttons">
+        <button id="btnFire" class="primary" disabled>Fire</button>
+      </div>
+      <div class="hint">MVP1: flat ground + simple physics. Next milestone adds deformable terrain and indestructible blocks.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Tip: open this page from your phone using the LAN URL shown in the server terminal.</div>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
