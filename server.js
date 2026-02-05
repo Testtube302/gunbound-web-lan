@@ -61,9 +61,8 @@ function snapshot() {
 }
 
 function chooseWind() {
-  // small-ish wind for MVP (tweak later)
-  const min = -120;
-  const max = 120;
+  const min = -360;
+  const max = 360;
   return Math.round(min + Math.random() * (max - min));
 }
 
@@ -122,12 +121,12 @@ function canHitWithWind(shooterId, windAx) {
 
 function chooseWindForTurn(shooterId) {
   // Try to keep full wind range, but re-roll until at least one valid hit is possible.
-  for (let tries = 0; tries < 60; tries++) {
+  for (let tries = 0; tries < 120; tries++) {
     const w = chooseWind();
     if (canHitWithWind(shooterId, w)) return w;
   }
-  // Fallback: calm day
-  return 0;
+  // Fallback: mild wind so even fallback isn't a free shot
+  return Math.round(-60 + Math.random() * 120);
 }
 
 function carveCrater(cx, cy, radius) {
@@ -378,7 +377,15 @@ wss.on('connection', (ws, req) => {
         state.terrain = null;
         // clear ready flags
         for (const p of state.players.values()) p.ready = false;
-        broadcast({ type: 'match_over', winnerId: id, koId: ko.targetId });
+        const winner = state.players.get(id);
+        const knocked = state.players.get(ko.targetId);
+        broadcast({
+          type: 'match_over',
+          winnerId: id,
+          koId: ko.targetId,
+          winnerName: winner?.name ?? id,
+          koName: knocked?.name ?? ko.targetId,
+        });
         broadcast(snapshot());
         return;
       }

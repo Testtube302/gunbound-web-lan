@@ -7,6 +7,7 @@ let joined = false;
 let lastState = null;
 let lastShot = null;
 let prevPhase = 'lobby';
+let matchOverInfo = null;
 
 // --- Sound (WebAudio; no external assets) ---
 // Mobile browsers require a user gesture before audio can play; we "unlock" on button clicks.
@@ -128,6 +129,7 @@ function updateUIFromState(s){
 
   // Music phase transitions
   if (prevPhase === 'lobby' && inMatch) {
+    matchOverInfo = null;
     startMusic(getAudioCtx());
   } else if (prevPhase !== 'lobby' && inLobby) {
     stopMusic();
@@ -143,7 +145,7 @@ function updateUIFromState(s){
   if (inLobby) elMatchInfo.textContent = 'Match: lobby (ready up)';
   else elMatchInfo.textContent = `Match: ${s.phase} • turn: ${s.turn} • wind: ${s.wind}`;
 
-  draw(ctx, s, lastShot);
+  draw(ctx, s, lastShot, matchOverInfo);
 }
 
 btnConnect.addEventListener('click', async () => {
@@ -184,11 +186,13 @@ btnConnect.addEventListener('click', async () => {
       }
       // Impact sound for any shot (including opponent), if audio is unlocked.
       if (lastShot?.impact) playImpactSfx();
-      draw(ctx, lastState, lastShot);
+      draw(ctx, lastState, lastShot, matchOverInfo);
       return;
     }
     if (msg.type === 'match_over') {
-      setStatus(`match over (winner: ${msg.winnerId})`);
+      matchOverInfo = { winnerName: msg.winnerName, koName: msg.koName };
+      setStatus(`match over — ${msg.winnerName} wins!`);
+      draw(ctx, lastState, lastShot, matchOverInfo);
       return;
     }
     if (msg.type === 'error') {
@@ -275,5 +279,5 @@ btnMute.addEventListener('click', () => {
 
 // basic redraw loop
 setInterval(() => {
-  if (lastState) draw(ctx, lastState, lastShot);
+  if (lastState) draw(ctx, lastState, lastShot, matchOverInfo);
 }, 200);

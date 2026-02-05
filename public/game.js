@@ -35,7 +35,7 @@ function drawTank(ctx, p, idx) {
   }
 }
 
-export function draw(ctx, state, shotResult) {
+export function draw(ctx, state, shotResult, matchOverInfo) {
   const world = state?.world || { width: 1000, height: 600, groundY: 520 };
   ctx.clearRect(0, 0, world.width, world.height);
 
@@ -137,5 +137,27 @@ export function draw(ctx, state, shotResult) {
     ctx.beginPath();
     ctx.arc(r.impact.x, r.impact.y, 6, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  // Game over overlay
+  if (matchOverInfo) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+    ctx.fillRect(0, 0, world.width, world.height);
+
+    ctx.textAlign = 'center';
+
+    ctx.fillStyle = '#ff3333';
+    ctx.font = 'bold 48px system-ui';
+    ctx.fillText('GAME OVER', world.width / 2, world.height / 2 - 40);
+
+    ctx.fillStyle = '#ffcc44';
+    ctx.font = 'bold 32px system-ui';
+    ctx.fillText(`${matchOverInfo.winnerName} wins!`, world.width / 2, world.height / 2 + 10);
+
+    ctx.fillStyle = '#8899aa';
+    ctx.font = '18px system-ui';
+    ctx.fillText(`${matchOverInfo.koName} was knocked out`, world.width / 2, world.height / 2 + 45);
+
+    ctx.textAlign = 'left';
   }
 }
