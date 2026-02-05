@@ -1,10 +1,12 @@
 import { draw } from './game.js';
+import { startMusic, stopMusic, toggleMute, isMuted } from './music.js';
 
 let ws = null;
 let myId = null;
 let joined = false;
 let lastState = null;
 let lastShot = null;
+let prevPhase = 'lobby';
 
 // --- Sound (WebAudio; no external assets) ---
 // Mobile browsers require a user gesture before audio can play; we "unlock" on button clicks.
@@ -88,6 +90,8 @@ const btnReady = document.getElementById('btnReady');
 const btnUnready = document.getElementById('btnUnready');
 const btnFire = document.getElementById('btnFire');
 
+const btnMute = document.getElementById('btnMute');
+
 const elAngle = document.getElementById('angle');
 const elPower = document.getElementById('power');
 const elAngleVal = document.getElementById('angleVal');
@@ -121,6 +125,14 @@ function updateUIFromState(s){
   const me = (s.players || []).find(p => p.id === myId);
   const inLobby = s.phase === 'lobby';
   const inMatch = s.phase === 'match' || s.phase === 'shot';
+
+  // Music phase transitions
+  if (prevPhase === 'lobby' && inMatch) {
+    startMusic(getAudioCtx());
+  } else if (prevPhase !== 'lobby' && inLobby) {
+    stopMusic();
+  }
+  prevPhase = s.phase;
 
   btnReady.disabled = !joined || !inLobby;
   btnUnready.disabled = !joined || !inLobby;
@@ -166,6 +178,10 @@ btnConnect.addEventListener('click', async () => {
     }
     if (msg.type === 'shot_result') {
       lastShot = msg.result;
+      // Patch terrain from shot_result for immediate visual update
+      if (lastShot?.terrain && lastState) {
+        lastState.terrain = lastShot.terrain;
+      }
       // Impact sound for any shot (including opponent), if audio is unlocked.
       if (lastShot?.impact) playImpactSfx();
       draw(ctx, lastState, lastShot);
@@ -248,6 +264,13 @@ btnFire.addEventListener('click', async () => {
   } else {
     send({ type: 'fire', angleDeg, power01 });
   }
+});
+
+// Mute button
+btnMute.textContent = isMuted() ? 'Unmute Music' : 'Mute Music';
+btnMute.addEventListener('click', () => {
+  const nowMuted = toggleMute();
+  btnMute.textContent = nowMuted ? 'Unmute Music' : 'Mute Music';
 });
 
 // basic redraw loop

@@ -1,31 +1,132 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" viewBox="0 0 96 64">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <!-- Hull gradient -->
+    <linearGradient id="hullG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb0b8"/>
+      <stop offset="0.35" stop-color="#ff6b82"/>
+      <stop offset="0.7" stop-color="#e04060"/>
+      <stop offset="1" stop-color="#b02040"/>
+    </linearGradient>
+    <!-- Turret gradient -->
+    <linearGradient id="turretG" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ff9aa7"/>
-      <stop offset="1" stop-color="#e23b57"/>
+      <stop offset="0.5" stop-color="#ff5c7a"/>
+      <stop offset="1" stop-color="#cc3050"/>
+    </linearGradient>
+    <!-- Track gradient -->
+    <linearGradient id="trackG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a3650"/>
+      <stop offset="1" stop-color="#0e1420"/>
+    </linearGradient>
+    <!-- Barrel gradient -->
+    <linearGradient id="barrelG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d07a7a"/>
+      <stop offset="0.5" stop-color="#9a4a5a"/>
+      <stop offset="1" stop-color="#803a4a"/>
     </linearGradient>
   </defs>
 
-  <!-- tracks -->
-  <rect x="10" y="42" width="76" height="14" rx="7" fill="#1a2231"/>
-  <rect x="14" y="45" width="68" height="8" rx="4" fill="#2a3650"/>
-  <!-- wheels -->
-  <g fill="#101722" opacity="0.85">
-    <circle cx="24" cy="52" r="4"/>
-    <circle cx="38" cy="52" r="4"/>
-    <circle cx="52" cy="52" r="4"/>
-    <circle cx="66" cy="52" r="4"/>
-    <circle cx="78" cy="52" r="4"/>
+  <!-- Shadow ellipse at base -->
+  <ellipse cx="48" cy="62" rx="40" ry="3" fill="#000" opacity="0.3"/>
+
+  <!-- === TRACKS === -->
+  <!-- Track frame -->
+  <rect x="8" y="50" width="72" height="12" rx="6" fill="#0e1420" stroke="#1a2231" stroke-width="1"/>
+  <!-- Track surface -->
+  <rect x="10" y="51" width="68" height="10" rx="5" fill="url(#trackG)"/>
+  <!-- Track links (individual segments) -->
+  <g fill="#1a2840" opacity="0.7">
+    <rect x="12" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="17" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="22" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="27" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="32" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="37" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="42" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="47" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="52" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="57" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="62" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="67" y="57" width="4" height="4" rx="0.5"/>
+    <rect x="72" y="57" width="4" height="4" rx="0.5"/>
   </g>
+  <!-- Drive sprocket (front large wheel) -->
+  <circle cx="74" cy="56" r="5" fill="#1a2840" stroke="#0a0f18" stroke-width="1"/>
+  <circle cx="74" cy="56" r="2" fill="#2a3c5a"/>
+  <!-- Idler wheel (rear large wheel) -->
+  <circle cx="14" cy="56" r="5" fill="#1a2840" stroke="#0a0f18" stroke-width="1"/>
+  <circle cx="14" cy="56" r="2" fill="#2a3c5a"/>
+  <!-- Road wheels (with hubs) -->
+  <g>
+    <circle cx="27" cy="56" r="4" fill="#162030" stroke="#0a0f18" stroke-width="0.8"/>
+    <circle cx="27" cy="56" r="1.5" fill="#2a3c5a"/>
+    <circle cx="38" cy="56" r="4" fill="#162030" stroke="#0a0f18" stroke-width="0.8"/>
+    <circle cx="38" cy="56" r="1.5" fill="#2a3c5a"/>
+    <circle cx="49" cy="56" r="4" fill="#162030" stroke="#0a0f18" stroke-width="0.8"/>
+    <circle cx="49" cy="56" r="1.5" fill="#2a3c5a"/>
+    <circle cx="60" cy="56" r="4" fill="#162030" stroke="#0a0f18" stroke-width="0.8"/>
+    <circle cx="60" cy="56" r="1.5" fill="#2a3c5a"/>
+  </g>
+  <!-- Return rollers (small, on top of track) -->
+  <circle cx="30" cy="51" r="2" fill="#1a2840" stroke="#0a0f18" stroke-width="0.5"/>
+  <circle cx="44" cy="51" r="2" fill="#1a2840" stroke="#0a0f18" stroke-width="0.5"/>
+  <circle cx="58" cy="51" r="2" fill="#1a2840" stroke="#0a0f18" stroke-width="0.5"/>
 
-  <!-- body -->
-  <path d="M20 40c2-10 12-18 26-18h8c14 0 24 8 26 18H20z" fill="url(#g)" stroke="#20060c" stroke-width="2"/>
-  <rect x="28" y="26" width="40" height="16" rx="8" fill="#ff6b82" stroke="#20060c" stroke-width="2"/>
+  <!-- === HULL === -->
+  <!-- Main hull body with angled front glacis -->
+  <path d="M12 50 L16 36 L22 32 L72 32 L78 36 L82 50 Z" fill="url(#hullG)" stroke="#20060c" stroke-width="1.5"/>
+  <!-- Glacis plate angle line -->
+  <line x1="16" y1="36" x2="22" y2="32" stroke="#cc3050" stroke-width="0.8" opacity="0.5"/>
+  <!-- Welded seam lines -->
+  <line x1="24" y1="50" x2="24" y2="34" stroke="#b03050" stroke-width="0.6" opacity="0.3"/>
+  <line x1="64" y1="50" x2="64" y2="34" stroke="#b03050" stroke-width="0.6" opacity="0.3"/>
+  <!-- Vision ports -->
+  <rect x="18" y="38" width="4" height="3" rx="1" fill="#1a2840" opacity="0.7"/>
+  <!-- Engine deck louvers (rear) -->
+  <g stroke="#b03050" stroke-width="0.6" opacity="0.4">
+    <line x1="14" y1="40" x2="14" y2="48"/>
+    <line x1="16" y1="39" x2="16" y2="48"/>
+    <line x1="18" y1="38" x2="18" y2="48"/>
+  </g>
+  <!-- Tow hooks -->
+  <rect x="10" y="46" width="3" height="3" rx="1" fill="#5a2a3c"/>
+  <rect x="81" y="46" width="3" height="3" rx="1" fill="#5a2a3c"/>
+  <!-- Hull top highlight -->
+  <path d="M24 33 L70 33" stroke="#fff" stroke-width="1" opacity="0.12"/>
 
-  <!-- turret -->
-  <rect x="44" y="18" width="18" height="10" rx="5" fill="#ff6b82" stroke="#20060c" stroke-width="2"/>
-  <rect x="58" y="20" width="26" height="6" rx="3" fill="#ff6b82" stroke="#20060c" stroke-width="2"/>
+  <!-- === TURRET === -->
+  <!-- Turret body (curved shape) -->
+  <path d="M32 32 Q34 20 44 18 L60 18 Q68 20 68 28 L68 32 Z" fill="url(#turretG)" stroke="#20060c" stroke-width="1.5"/>
+  <!-- Mantlet (gun mount shield) -->
+  <path d="M62 21 Q66 22 66 25 Q66 28 62 29" fill="#9a4a5a" stroke="#20060c" stroke-width="1"/>
+  <!-- Commander's hatch -->
+  <ellipse cx="42" cy="21" rx="4" ry="3" fill="#e04060" stroke="#b02040" stroke-width="0.8"/>
+  <line x1="42" y1="19" x2="42" y2="23" stroke="#b02040" stroke-width="0.6"/>
+  <!-- Loader's hatch -->
+  <ellipse cx="53" cy="21" rx="3" ry="2.5" fill="#e04060" stroke="#b02040" stroke-width="0.8"/>
+  <!-- Bolt pattern on turret -->
+  <g fill="#cc3050" opacity="0.5">
+    <circle cx="36" cy="28" r="0.8"/>
+    <circle cx="40" cy="28" r="0.8"/>
+    <circle cx="44" cy="28" r="0.8"/>
+    <circle cx="48" cy="28" r="0.8"/>
+    <circle cx="52" cy="28" r="0.8"/>
+    <circle cx="56" cy="28" r="0.8"/>
+    <circle cx="60" cy="28" r="0.8"/>
+  </g>
+  <!-- Specular highlight on turret top -->
+  <path d="M38 19 Q44 17 56 19" stroke="#fff" stroke-width="1.2" opacity="0.2" fill="none"/>
 
-  <!-- highlight -->
-  <path d="M26 38c4-8 12-12 22-12h8c10 0 18 4 22 12" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="3"/>
+  <!-- === BARREL === -->
+  <!-- Main barrel -->
+  <rect x="66" y="22" width="24" height="4" rx="1.5" fill="url(#barrelG)" stroke="#20060c" stroke-width="1"/>
+  <!-- Bore evacuator (bulge midway) -->
+  <rect x="76" y="20.5" width="5" height="7" rx="2" fill="#aa5a6a" stroke="#20060c" stroke-width="0.8"/>
+  <!-- Muzzle brake at tip -->
+  <rect x="88" y="21" width="4" height="6" rx="1" fill="#9a4a5a" stroke="#20060c" stroke-width="0.8"/>
+  <!-- Muzzle brake flanges -->
+  <rect x="89" y="20" width="1.5" height="8" rx="0.5" fill="#884058"/>
+  <rect x="91" y="20.5" width="1" height="7" rx="0.5" fill="#884058"/>
+  <!-- Barrel highlight -->
+  <line x1="67" y1="22.5" x2="88" y2="22.5" stroke="#fff" stroke-width="0.6" opacity="0.15"/>
 </svg>

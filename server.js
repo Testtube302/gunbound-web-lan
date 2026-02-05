@@ -24,6 +24,7 @@ const state = {
   turn: null, // playerId
   wind: 0, // px/s^2 (lateral accel)
   lastResult: null,
+  terrain: null, // Array of groundY per X pixel (1000 entries), null when not in match
 };
 
 const WORLD = {
@@ -55,6 +56,7 @@ function snapshot() {
       y: p.y ?? 0,
     })),
     lastResult: state.lastResult,
+    terrain: state.terrain ? state.terrain.map(v => Math.round(v)) : null,
   };
 }
 
@@ -128,11 +130,27 @@ function chooseWindForTurn(shooterId) {
   return 0;
 }
 
+function carveCrater(cx, cy, radius) {
+  if (!state.terrain) return;
+  radius = radius || 35;
+  const minX = Math.max(0, Math.round(cx - radius));
+  const maxX = Math.min(WORLD.width - 1, Math.round(cx + radius));
+  for (let x = minX; x <= maxX; x++) {
+    const dx = x - cx;
+    const depth = Math.sqrt(Math.max(0, radius * radius - dx * dx));
+    // Push ground down (higher Y = lower on screen)
+    state.terrain[x] = Math.min(WORLD.height, Math.max(state.terrain[x], cy + depth));
+  }
+}
+
 function startMatch() {
   const ps = Array.from(state.players.values());
   if (ps.length !== 2) return;
   state.phase = 'match';
   state.lastResult = null;
+
+  // Initialize terrain heightmap
+  state.terrain = new Array(WORLD.width).fill(WORLD.groundY);
 
   // --- Spawn randomization (replayability) ---
   // We randomize spawn X positions each match.
@@ -225,9 +243,12 @@ function simulateShot(shooterId, angleDeg, power01) {
 
     path.push([Math.round(x), Math.round(y)]);
 
-    // ground hit
-    if (y >= WORLD.groundY) {
-      impact = { x: Math.round(x), y: WORLD.groundY, kind: 'ground' };
+    // ground hit (terrain heightmap)
+    const groundAtX = state.terrain
+      ? (state.terrain[clamp(Math.round(x), 0, WORLD.width - 1)] ?? WORLD.groundY)
+      : WORLD.groundY;
+    if (y >= groundAtX) {
+      impact = { x: Math.round(x), y: Math.round(groundAtX), kind: 'ground' };
       break;
     }
 
@@ -261,6 +282,11 @@ function simulateShot(shooterId, angleDeg, power01) {
     }
   }
 
+  // Carve crater on ground impact
+  if (impact && impact.kind === 'ground') {
+    carveCrater(impact.x, impact.y, 35);
+  }
+
   return {
     shooterId,
     angleDeg,
@@ -269,6 +295,7 @@ function simulateShot(shooterId, angleDeg, power01) {
     path,
     impact,
     events,
+    terrain: state.terrain ? state.terrain.map(v => Math.round(v)) : null,
   };
 }
 
@@ -299,6 +326,7 @@ wss.on('connection', (ws, req) => {
         state.phase = 'lobby';
         state.turn = null;
         state.lastResult = null;
+        state.terrain = null;
       }
       broadcast(snapshot());
       return;
@@ -309,6 +337,7 @@ wss.on('connection', (ws, req) => {
       state.phase = 'lobby';
       state.turn = null;
       state.lastResult = null;
+      state.terrain = null;
       broadcast(snapshot());
       return;
     }
@@ -346,6 +375,7 @@ wss.on('connection', (ws, req) => {
         // end match (MVP): back to lobby after KO
         state.phase = 'lobby';
         state.turn = null;
+        state.terrain = null;
         // clear ready flags
         for (const p of state.players.values()) p.ready = false;
         broadcast({ type: 'match_over', winnerId: id, koId: ko.targetId });

@@ -43,9 +43,52 @@ export function draw(ctx, state, shotResult) {
   ctx.fillStyle = '#0c0f16';
   ctx.fillRect(0, 0, world.width, world.height);
 
-  // ground
-  ctx.fillStyle = '#1f2a3b';
-  ctx.fillRect(0, world.groundY, world.width, world.height - world.groundY);
+  // ground / terrain
+  const terrain = state?.terrain;
+  if (terrain && terrain.length > 0) {
+    // Layered terrain rendering with destructible craters
+
+    // Layer 1: Dark subsurface fill (revealed by craters)
+    ctx.fillStyle = '#0f151f';
+    ctx.beginPath();
+    ctx.moveTo(0, Math.min(terrain[0] + 3, world.height));
+    for (let x = 0; x < terrain.length; x += 2) {
+      ctx.lineTo(x, Math.min(terrain[x] + 3, world.height));
+    }
+    ctx.lineTo(terrain.length - 1, Math.min(terrain[terrain.length - 1] + 3, world.height));
+    ctx.lineTo(world.width, world.height);
+    ctx.lineTo(0, world.height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Layer 2: Main terrain surface
+    ctx.fillStyle = '#1f2a3b';
+    ctx.beginPath();
+    ctx.moveTo(0, terrain[0]);
+    for (let x = 2; x < terrain.length; x += 2) {
+      ctx.lineTo(x, terrain[x]);
+    }
+    ctx.lineTo(terrain.length - 1, terrain[terrain.length - 1]);
+    ctx.lineTo(world.width, world.height);
+    ctx.lineTo(0, world.height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Layer 3: Scorched edge stroke along terrain surface
+    ctx.strokeStyle = '#2a3d55';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, terrain[0]);
+    for (let x = 2; x < terrain.length; x += 2) {
+      ctx.lineTo(x, terrain[x]);
+    }
+    ctx.lineTo(terrain.length - 1, terrain[terrain.length - 1]);
+    ctx.stroke();
+  } else {
+    // Fallback: flat ground rect (lobby / no terrain data)
+    ctx.fillStyle = '#1f2a3b';
+    ctx.fillRect(0, world.groundY, world.width, world.height - world.groundY);
+  }
 
   // wind
   ctx.fillStyle = '#a8b3cc';
